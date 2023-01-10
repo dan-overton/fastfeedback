@@ -11,7 +11,7 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <ChakraProvider theme={theme}>
+      <ChakraProvider theme={theme} resetCSS>
         <AuthProvider>
           <Component {...pageProps} />
         </AuthProvider>
