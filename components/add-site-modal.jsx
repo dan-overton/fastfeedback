@@ -11,39 +11,70 @@ import {
   FormControl,
   ModalBody,
   ModalContent,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from '@chakra-ui/react';
-
+import { mutate } from 'swr';
 import { useForm } from 'react-hook-form';
 import { createSite } from '@/lib/db';
+import { useAuth } from '@/lib/auth';
 
-function AddSiteModal() {
+function AddSiteModal({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const auth = useAuth();
 
   const {
     register,
+    reset,
     formState: { errors },
     handleSubmit
   } = useForm();
 
   const initialRef = useRef(null);
 
-  const onSubmit = (values) => {
-    createSite(values);
+  const onSubmit = async ({ name, link }) => {
+    const newSite = {
+      authorId: auth.user.uid,
+      createdAt: new Date().toISOString(),
+      name,
+      link
+    };
+    const { id } = await createSite(newSite);
+
+    toast({
+      title: 'Succcess!',
+      description: `We've added your site`,
+      status: 'success',
+      duration: 5000,
+      isClosable: true
+    });
+    mutate('/api/sites', (data) => ({
+      sites: [{ id, ...newSite }, ...data.sites]
+    }));
+    onClose();
   };
 
-  const { ref, ...rest } = register('site');
+  const { ref, ...rest } = register('name');
 
   return (
     <>
       <Button
-        onClick={onOpen}
+        onClick={() => {
+          reset();
+          onOpen();
+        }}
+        id="add-site-modal-button"
+        backgroundColor="gray.900"
+        color="white"
         fontWeight="medium"
-        variant="solid"
-        size="md"
-        maxWidth="200px"
+        _hover={{ bg: 'gray.700' }}
+        _active={{
+          bg: 'gray.800',
+          transform: 'scale(0.95)'
+        }}
       >
-        Add Your First Site
+        {children}
       </Button>
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -55,7 +86,7 @@ function AddSiteModal() {
               <FormLabel>Name</FormLabel>
               <Input
                 {...rest}
-                name="site"
+                name="name"
                 ref={(e) => {
                   ref(e), (initialRef.current = e);
                 }}

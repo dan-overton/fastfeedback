@@ -7,10 +7,12 @@ import {
   Heading,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink
+  BreadcrumbLink,
+  Button
 } from '@chakra-ui/react';
 import { LogoIcon } from '@/lib/icons';
 import { useAuth } from '@/lib/auth';
+import { signOut } from 'firebase/auth';
 
 const DashboardShell = ({ children }) => {
   const { user } = useAuth();
@@ -29,8 +31,12 @@ const DashboardShell = ({ children }) => {
           <Link>Sites</Link>
         </Stack>
         <Flex alignItems="center">
-          <Link mr={4}>Account</Link>
-          <Avatar size="sm" src={user.photoUrl} />
+          {user && (
+            <Button variant="ghost" mr={2} onClick={() => signOut()}>
+              Log Out
+            </Button>
+          )}
+          <Avatar size="sm" src={user?.photoUrl} />
         </Flex>
       </Flex>
       <Flex backgroundColor="gray.100" p={8} flex={1}>
@@ -41,14 +47,6 @@ const DashboardShell = ({ children }) => {
           ml="auto"
           mr="auto"
         >
-          <Breadcrumb separator="/">
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink color="gray.700" fontSize="sm">
-                Sites
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-          <Heading mb={4}>Sites</Heading>
           {children}
         </Flex>
       </Flex>
