@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Box, Button, Flex, Heading, Icon, Text } from '@chakra-ui/react'
+import { Button, Flex } from '@chakra-ui/react'
 import { LogoIcon } from '@/lib/icons'
 import { useAuth } from '@/lib/auth'
 
